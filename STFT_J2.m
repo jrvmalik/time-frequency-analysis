@@ -95,6 +95,7 @@ end
 tfr = tfr / sqrt(N);
 
 % crop output
-tfr(frequency < lf, :) = 0;
+tfr(frequency < lf, :) = [];
+frequency(frequency < lf) = [];
 
 end

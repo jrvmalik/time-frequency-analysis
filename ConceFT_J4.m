@@ -151,6 +151,7 @@ end
 cft = cft / max(1, iter);
 
 % crop output
-cft(frequency < lf) = 0;
+cft(frequency < lf) = [];
+frequency(frequency < lf) = [];
 
 end

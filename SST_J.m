@@ -128,7 +128,8 @@ id = bsxfun(@plus, omega, neta * (0:tcol - 1));
 sst = reshape(accumarray(id(:), sst(:), [tcol * neta, 1]), [neta, tcol]);
 
 % crop
-tfr(frequency < lf, :) = 0;
-sst(frequency < lf, :) = 0;
+tfr(frequency < lf, :) = [];
+sst(frequency < lf, :) = [];
+frequency(frequency < lf) = [];
 
 end

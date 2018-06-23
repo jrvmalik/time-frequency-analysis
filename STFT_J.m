@@ -83,9 +83,12 @@ for icol = 1:tcol,
     tfr(indices, icol) = rSig .* h(Lh + 1 + tau);
 end
 
-% Fourier transform, crop output
+% Fourier transform
 tfr = fft(tfr) / sqrt(N);
 tfr = tfr(1:neta, :);
-tfr(frequency < lf, :) = 0;
+
+% crop output
+tfr(frequency < lf, :) = [];
+frequency(frequency < lf) = [];
 
 end
