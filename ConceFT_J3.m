@@ -14,7 +14,7 @@ function [cft, frequency] = ConceFT_J3(x, Fs, hlength, iter, hop, n, hf, lf)
 % OUTPUT
 %    cft    :  The concentrated time-freq representation of the signal x.
 % This implementation requires the function hermf.m.
-% Written by John Malik on 2017.4.28.
+% Written by John Malik on 2017.4.28, john.malik@duke.edu.
 
 switch nargin
     case 7

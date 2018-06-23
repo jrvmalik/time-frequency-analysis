@@ -14,7 +14,7 @@ function [deshape, ceps, mask, tfr, frequency, quefrency] = deShape_J(x, Fs, hle
 %    ceps   :  The short-time cepstral transform of the signal x.
 %    mask   :  The inverted short-time cepstral transform of the signal x.
 %    tfr    :  The STFT of the signal x.
-% Written by John Malik on 2018.6.22.
+% Written by John Malik on 2018.6.22, john.malik@duke.edu.
 
 switch nargin
     case 7

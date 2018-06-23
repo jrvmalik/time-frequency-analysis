@@ -10,7 +10,7 @@ function [tfr, frequency] = STFT_J(x, Fs, hlength, hop, n, hf, lf)
 %    hf     :  Crop output to display only frequencies less than hf.
 % OUTPUT
 %    tfr    :  The STFT of the signal x.
-% Written by John Malik on 2018.6.22.
+% Written by John Malik on 2018.6.22, john.malik@duke.edu.
 
 switch nargin
     case 6 

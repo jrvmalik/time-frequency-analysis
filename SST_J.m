@@ -11,7 +11,7 @@ function [sst, tfr, frequency] = SST_J(x, Fs, hlength, hop, n, hf, lf)
 % OUTPUT
 %    sst    :  The SST of the signal x. 
 %    tfr    :  The STFT of the signal x.
-% Written by John Malik on 2018.6.22.
+% Written by John Malik on 2018.6.22, john.malik@duke.edu.
 
 switch nargin
     case 6 
