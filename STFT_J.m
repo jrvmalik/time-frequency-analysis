@@ -75,7 +75,7 @@ frequency = frequency(frequency <= hf);
 
 % perform convolution
 tfr = zeros(N, tcol); 
-for icol = 1:tcol,
+for icol = 1:tcol
     ti = t(icol); 
     tau = -min([n - 1, Lh, ti - 1]):min([n - 1, Lh, NN - ti]);
     indices = rem(N + tau, N) + 1; 

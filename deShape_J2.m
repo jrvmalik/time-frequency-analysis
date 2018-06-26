@@ -44,7 +44,7 @@ switch nargin
         lf = 1;
         gamma = 0.2;
         hop = 40;
-        p = 12;
+        n = 8000;
         hf = 5;
         disp('Testing code on a 2 Hz sawtooth wave.')
 end
@@ -85,7 +85,7 @@ dh = -ex ./ sigma^2 .* h;
 % perform convolution
 tfr = zeros(N, tcol); 
 tfr2 = zeros(N, tcol);
-for icol = 1:tcol,
+for icol = 1:tcol
     ti = t(icol); 
     tau = -min([n - 1, Lh, ti - 1]):min([n - 1, Lh, NN - ti]);
     indices = rem(N + tau, N) + 1; 

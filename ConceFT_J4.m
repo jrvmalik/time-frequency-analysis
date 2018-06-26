@@ -105,7 +105,7 @@ end
 % STFT
 tfr = zeros(neta, tcol); 
 tfr2 = zeros(neta, tcol);
-for icol = 1:tcol,
+for icol = 1:tcol
     
     tmp = zeros(N, 1);
     tmp2 = zeros(N, 1);

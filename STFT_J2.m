@@ -76,7 +76,7 @@ frequency = frequency(frequency <= hf);
 
 % STFT
 tfr = zeros(neta, tcol); 
-for icol = 1:tcol,
+for icol = 1:tcol
     
     tmp = zeros(N, 1);
     
