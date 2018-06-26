@@ -61,7 +61,7 @@ alpha = 10;
 % organize input
 x = x(:);
 if any(isnan(x))
-    x = interp1(find(~isnan(x)), x(~isnan(x)), 1:length(x), 'pchip', 'extrap');
+    x = interp1(find(~isnan(x)), x(~isnan(x)), 1:length(x), 'pchip', 'extrap')';
 end
 
 % time (samples)
