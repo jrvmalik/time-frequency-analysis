@@ -84,7 +84,7 @@ for icol = 1:tcol
 end
 
 % Fourier transform
-tfr = fft(tfr) / sqrt(N);
+tfr = fft(tfr);
 tfr = tfr(1:neta, :);
 
 % crop output

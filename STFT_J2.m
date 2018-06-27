@@ -91,9 +91,6 @@ for icol = 1:tcol
     
 end
 
-% normalize
-tfr = tfr / sqrt(N);
-
 % crop output
 tfr(frequency < lf, :) = [];
 frequency(frequency < lf) = [];

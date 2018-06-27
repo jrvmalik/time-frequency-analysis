@@ -1,4 +1,4 @@
-function [sst, tfr, frequency] = SST_J2(x, Fs, hlength, hop, n, hf, lf)
+function [sst, tfr, frequency] = SST_J2(x, Fs, hlength, hop, n, hf, lf, ths)
 % Computes the synchrosqueezing transform of the signal x.
 % This serial implementation uses less memory but is slower than SST_J.
 % INPUT
@@ -9,22 +9,29 @@ function [sst, tfr, frequency] = SST_J2(x, Fs, hlength, hop, n, hf, lf)
 %    p      :  Number of pixels in the frequency axis.
 %    lf     :  Crop output to display only frequencies larger than lf.
 %    hf     :  Crop output to display only frequencies less than hf.
+%    ths    :  Reassignment threshold.  Choose a value between 0 and 1. 
 % OUTPUT
 %    sst    :  The SST of the signal x. 
 %    tfr    :  The STFT of the signal x.
 % Written by John Malik on 2018.6.22, john.malik@duke.edu.
 
 switch nargin
+    case 7
+        ths = 1;
     case 6 
+        ths = 1;
         lf = 0;
     case 5
+        ths = 1;
         hf = inf;
         lf = 0;
     case 4
+        ths = 1;
         n = pow2(nextpow2(length(x))) / 2 + 1;
         hf = inf;
         lf = 0;
     case 3
+        ths = 1;
         hop = 1;
         n = pow2(nextpow2(length(x))) / 2 + 1;
         hf = inf;
@@ -41,6 +48,7 @@ switch nargin
         hop = 40;
         n = 8000;
         hf = 12;
+        ths = 0.5;
         disp('Testing code on a 2 Hz sawtooth wave.')
 end
 
@@ -99,19 +107,18 @@ for icol = 1:tcol
     
 end
 
-% normalize
-tfr = tfr / sqrt(N);
-tfr2 = tfr2 / sqrt(N);
+% reassignment threshold
+ths = quantile(abs(tfr), (1 - ths));
 
 % omega operator
 omega = -inf(neta, tcol);
-ups = abs(tfr) > 0;
+ups = ~bsxfun(@le, abs(tfr), ths);
 omega(ups) = round(N / hlength * imag(tfr2(ups) ./ tfr(ups) / (2 * pi)));
 
 % mapped out of range
 index = repmat((1:neta)', [1, tcol]);
 omega = index - omega;
-id = omega < 1 | omega > neta;
+id = omega < 1 | omega > neta | ~ups;
 omega(id) = index(id);
 sst = tfr; sst(id) = 0;
 

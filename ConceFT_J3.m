@@ -1,4 +1,4 @@
-function [cft, frequency] = ConceFT_J3(x, Fs, hlength, iter, hop, n, hf, lf)
+function [cft, frequency] = ConceFT_J3(x, Fs, hlength, iter, hop, n, hf, lf, ths)
 % Computes the concentrated time-freq representation of the signal x.
 % Choose iter = 1 to compute the SST of the signal x.
 % Choose iter = 0 to compute only the STFT of the signal x.
@@ -11,27 +11,35 @@ function [cft, frequency] = ConceFT_J3(x, Fs, hlength, iter, hop, n, hf, lf)
 %    n      :  Number of pixels in the frequency axis.
 %    lf     :  Crop output to display only frequencies larger than lf.
 %    hf     :  Crop output to display only frequencies less than hf.
+%    ths    :  Reassignment threshold.  Choose a value between 0 and 1. 
 % OUTPUT
 %    cft    :  The concentrated time-freq representation of the signal x.
 % This implementation requires the function hermf.m.
 % Written by John Malik on 2017.4.28, john.malik@duke.edu.
 
 switch nargin
+    case 8
+        ths = 1;
     case 7
+        ths = 1;
         lf = 0;
     case 6
+        ths = 1;
         hf = inf;
         lf = 0;
     case 5
+        ths = 1;
         hf = inf;
         lf = 0;
         n = pow2(nextpow2(length(x))) / 2 + 1;
     case 4
+        ths = 1;
         hf = inf;
         lf = 0;
         hop = 1;
         n = pow2(nextpow2(length(x))) / 2 + 1;
     case 3
+        ths = 1;
         hf = inf;
         lf = 0;
         iter = 1; 
@@ -50,8 +58,9 @@ switch nargin
         lf = 1;
         hop = 40;
         n = 8000;
-        hf = 5;
-        disp('Testing code on a 2 Hz sawtooth wave.')
+        hf = 12;
+        ths = 1;
+        disp('Testing code on a noisy 2 Hz sawtooth wave.')
 end
 
 % organize input
@@ -112,7 +121,7 @@ for icol = 1:tcol
     tfr2(indices, icol) = rSig .* dh(Lh + 1 + tau);
 end
 
-tfr = fft(tfr) / sqrt(N);
+tfr = fft(tfr);
 tfr = tfr(1:neta, :);
 
 if iter == 0
@@ -120,18 +129,22 @@ if iter == 0
     break
 end
 
-tfr2 = fft(tfr2) / sqrt(N);
+tfr2 = fft(tfr2);
 tfr2 = tfr2(1:neta, :);
 
+% reassignment threshold
+threshold = quantile(abs(tfr), (1 - ths));
+
 % omega operator
+neta = length(frequency);
 omega = -inf(neta, tcol);
-ups = abs(tfr) > 0;
+ups = ~bsxfun(@le, abs(tfr), threshold);
 omega(ups) = round(N * imag(tfr2(ups) ./ tfr(ups) / (2 * pi)));
 
 % mapped out of range
 index = repmat((1:neta)', [1, tcol]);
 omega = index - omega;
-id = omega < 1 | omega > neta;
+id = omega < 1 | omega > neta | ~ups;
 omega(id) = index(id);
 sst = tfr; sst(id) = 0;
 
@@ -145,7 +158,7 @@ end
 cft = cft / max(1, iter);
 
 % crop output
-cft(frequency < lf) = [];
-frequency(frequency < lf) = [];
+cft(frequency < lf, :) = [];
+frequency(frequency < lf, :) = [];
 
 end

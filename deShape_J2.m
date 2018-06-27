@@ -1,14 +1,15 @@
-function [deshape, ceps, mask, tfr, frequency, quefrency] = deShape_J2(x, Fs, hlength, hf, gamma, hop, n, lf)
-% Computes the de-shape short-time Fourier transform of the signal x.
+function [deshape, ceps, mask, tfr, frequency, quefrency] = deShape_J2(x, Fs, hlength, hf, gamma, hop, n, lf, ths)
+% Computes the de-shape synchrosqueezing transform of the signal x.
 % INPUT
 %    x      :  Signal (x should be a column vector).
 %    Fs     :  Sampling rate of x.
 %    hlength:  Window length (in samples).
 %    hop    :  Calculate the fft every hop samples, starting at 1.
 %    n      :  Number of pixels in the frequency axis.
-%    lf     :  Concatenate output to display only frequencies larger than lf.
+%    lf     :  Crop output to display only frequencies larger than lf.
 %    hf     :  Least upper bound on fundamental frequency of all components.
 %    gamma  :  Cepstral power.
+%    ths    :  Reassignment threshold.  Choose a value between 0 and 1. 
 % OUTPUT
 %    deshape:  The de-shape SST of the signal x. 
 %    ceps   :  The short-time cepstral transform of the signal x.
@@ -17,20 +18,26 @@ function [deshape, ceps, mask, tfr, frequency, quefrency] = deShape_J2(x, Fs, hl
 % Written by John Malik on 2018.6.22, john.malik@duke.edu.
 
 switch nargin
+    case 8
+        ths = 1;
     case 7
+        ths = 1;
         lf = 0;
     case 6 
         n = pow2(nextpow2(length(x))) / 2 + 1;
         lf = 0;
+        ths = 1;
     case 5
         hop = 1;
         n = pow2(nextpow2(length(x))) / 2 + 1;
         lf = 0;
+        ths = 1;
     case 4
         gamma = 0.2;
         hop = 1;
         n = pow2(nextpow2(length(x))) / 2 + 1;
         lf = 0;
+        ths = 1;
     case 3
         error('Select an upper bound for the fundamental frequency of all components.')
     case 2
@@ -46,6 +53,7 @@ switch nargin
         hop = 40;
         n = 8000;
         hf = 5;
+        ths = 0.1;
         disp('Testing code on a 2 Hz sawtooth wave.')
 end
 
@@ -95,14 +103,14 @@ for icol = 1:tcol
 end
 
 % Fourier transform
-tfr = fft(tfr) / sqrt(N);
+tfr = fft(tfr);
 tfr = tfr(1:n, :);
 
 % non-negative frequency axis
 frequency = Fs / 2 * linspace(0, 1, n)'; 
 
 if squeeze_flag
-    tfr2 = fft(tfr2) / sqrt(N);
+    tfr2 = fft(tfr2);
     tfr2 = tfr2(1:n, :);
 end
 
@@ -121,13 +129,13 @@ uquefrency = (0:1/alpha:n-1) / Fs;
 % inverted short-time cepstral transform
 mask = interp1(1 ./ uquefrency(2:end), uceps(2:end, :), frequency);
 
-% concatenate output
+% crop output
 u = frequency <= hf;
 tfr = tfr(u, :);
 mask = mask(u, :);
 frequency = frequency(u);
 
-% concatenate output (ceps)
+% crop output (ceps)
 ceps = ceps(quefrency <= 2 / lf, :);
 quefrency = quefrency(quefrency <= 2 / lf);
 
@@ -138,19 +146,22 @@ if ~squeeze_flag
     return
 end
 
-% concatenate
+% crop
 tfr2 = tfr2(u, :);
+
+% reassignment threshold
+ths = quantile(abs(tfr), (1 - ths));
 
 % omega operator
 neta = length(frequency);
 omega = -inf(neta, tcol);
-ups = abs(tfr) > 0;
+ups = ~bsxfun(@le, abs(tfr), ths);
 omega(ups) = round(N / hlength * imag(tfr2(ups) ./ tfr(ups) / (2 * pi)));
 
 % mapped out of range
 index = repmat((1:neta)', [1, tcol]);
 omega = index - omega;
-id = omega < 1 | omega > neta;
+id = omega < 1 | omega > neta | ~ups;
 omega(id) = index(id);
 deshape(id) = 0;
 
@@ -158,7 +169,7 @@ deshape(id) = 0;
 id = bsxfun(@plus, omega, neta * (0:tcol - 1));
 deshape = reshape(accumarray(id(:), deshape(:), [tcol * neta, 1]), [neta, tcol]);
 
-% concatenate
+% crop
 tfr(frequency < lf, :) = [];
 mask(frequency < lf, :) = [];
 deshape(frequency < lf, :) = [];
