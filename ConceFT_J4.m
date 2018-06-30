@@ -12,7 +12,7 @@ function [cft, frequency] = ConceFT_J4(x, Fs, hlength, iter, hop, n, hf, lf, ths
 %    n      :  Number of pixels in the frequency axis.
 %    lf     :  Crop output to display only frequencies larger than lf.
 %    hf     :  Crop output to display only frequencies less than hf.
-%    ths    :  Reassignment threshold.  Choose a value between 0 and 1.
+%    ths    :  Fraction of values to reassign. 
 % OUTPUT
 %    cft    :  The concentrated time-freq representation of the signal x.
 % This implementation requires the function hermf.m.

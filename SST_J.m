@@ -8,7 +8,7 @@ function [sst, tfr, frequency] = SST_J(x, Fs, hlength, hop, n, hf, lf, ths)
 %    n      :  Number of pixels in the frequency axis.
 %    lf     :  Crop output to display only frequencies larger than lf.
 %    hf     :  Crop output to display only frequencies less than hf.
-%    ths    :  Reassignment threshold.  Choose a value between 0 and 1. 
+%    ths    :  Fraction of values to reassign. 
 % OUTPUT
 %    sst    :  The SST of the signal x. 
 %    tfr    :  The STFT of the signal x.

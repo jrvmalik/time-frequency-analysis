@@ -9,7 +9,7 @@ function [deshape, ceps, mask, tfr, frequency, quefrency] = deShape_J(x, Fs, hle
 %    lf     :  Crop output to display only frequencies larger than lf.
 %    hf     :  Least upper bound on fundamental frequency of all components.
 %    gamma  :  Cepstral power.
-%    ths    :  Reassignment threshold.  Choose a value between 0 and 1. 
+%    ths    :  Fraction of values to reassign. 
 % OUTPUT
 %    deshape:  The de-shape SST of the signal x. 
 %    ceps   :  The short-time cepstral transform of the signal x.
