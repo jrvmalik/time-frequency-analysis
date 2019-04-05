@@ -95,6 +95,7 @@ for icol = 1:tcol
     tau = -min([n - 1, Lh, ti - 1]):min([n - 1, Lh, NN - ti]);
     indices = rem(N + tau, N) + 1; 
     rSig = x(ti + tau, 1);
+    % rSig = rSig - mean(rSig);
     tfr(indices, icol) = rSig .* h(Lh + 1 + tau);
     tfr2(indices, icol) = rSig .* dh(Lh + 1 + tau);
 end
@@ -113,7 +114,7 @@ end
 
 % short-time cepstral transform and quefrency axis
 ceps = ifft(abs(tfr).^gamma, N, 1); 
-ceps = max(real(ceps(1:n, :)), 0);
+ceps = real(ceps(1:n, :));
 quefrency = (0:n-1)' / Fs;
 
 % remove envelope
@@ -121,6 +122,10 @@ ceps(quefrency < 1 / hf, :) = 0;
 
 % inverted short-time cepstral transform
 mask = interp1(1 ./ quefrency(2:end), ceps(2:end, :), frequency);
+
+% handle negative entries
+ceps = max(ceps, 0);
+mask = max(mask, 0);
 
 % crop output
 u = frequency <= hf;
